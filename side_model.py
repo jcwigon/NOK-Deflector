@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -169,3 +169,4 @@ def draw_overlay_bgr(img_gray: np.ndarray, res: Dict[str, Any]) -> np.ndarray:
     txt = f'{status} exp={res.get("expected_side","-")} pred={res["side_pred"]} conf={res["confidence"]:.3f}'
     cv2.putText(vis, txt, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
     return vis
+

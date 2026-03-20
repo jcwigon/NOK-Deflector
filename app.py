@@ -1,4 +1,5 @@
-﻿import base64
+﻿# -*- coding: utf-8 -*-
+import base64
 import io
 from pathlib import Path
 
@@ -11,7 +12,7 @@ from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 from side_model import SideClassifier, draw_overlay_bgr
 
 st.set_page_config(page_title="Side check (RIGHT vs LEFT)", layout="wide")
-st.title("Kontrola strony montaĹĽu: RIGHT vs LEFT")
+st.title("Kontrola strony montażu: RIGHT vs LEFT")
 
 MODEL_DIR_DEFAULT = Path("models/number_side")
 
@@ -32,20 +33,20 @@ with st.sidebar:
     st.header("Ustawienia")
     model_dir = st.text_input("Model dir", value=str(MODEL_DIR_DEFAULT))
     expected_side = st.selectbox("Oczekiwana strona (kafel)", ["RIGHT", "LEFT"], index=0)
-    show_ok = st.checkbox("Pokazuj teĹĽ OK", value=False)
+    show_ok = st.checkbox("Pokazuj też OK", value=False)
 
 clf = load_model(model_dir)
 
 st.write(f"**Expected side:** `{expected_side}` | **thr:** `{clf.cfg.thr}` | **model_dir:** `{model_dir}`")
 
 uploads = st.file_uploader(
-    "Wgraj zdjÄ™cia (mogÄ… byÄ‡ pomieszane):",
+    "Wgraj zdjęcia (mogą być pomieszane):",
     type=["png", "jpg", "jpeg", "bmp", "tif", "tiff", "webp"],
     accept_multiple_files=True,
 )
 
 if not uploads:
-    st.info("Wgraj pliki aby zobaczyÄ‡ wyniki.")
+    st.info("Wgraj pliki aby zobaczyć wyniki.")
     st.stop()
 
 rows = []
@@ -55,14 +56,14 @@ for uf in uploads:
     data = np.frombuffer(uf.getvalue(), dtype=np.uint8)
     img = cv2.imdecode(data, cv2.IMREAD_GRAYSCALE)
     if img is None:
-        st.warning(f"Nie mogÄ™ odczytaÄ‡: {uf.name}")
+        st.warning(f"Nie mogę odczytać: {uf.name}")
         continue
 
     pred = clf.predict_from_gray(img)
     pred["name"] = uf.name
     res = clf.check_expected(pred, expected_side=expected_side)
 
-    # id do powiÄ…zania wiersz <-> zdjÄ™cie
+    # id do powiązania wiersz <-> zdjęcie
     res["row_id"] = len(rows)
 
     rows.append(res)
@@ -106,12 +107,12 @@ with c3:
     summary_tile("Uncertain", unc, "#ef6c00")
 
 # ------------------ TABELA (AgGrid) ------------------
-st.subheader("Tabela (kliknij checkbox, ĹĽeby podĹ›wietliÄ‡ obrazek niĹĽej)")
+st.subheader("Tabela (kliknij checkbox, żeby podświetlić obrazek niżej)")
 
 # przycisk do odklikania (czyszczenia selekcji)
 clear_col, _ = st.columns([0.25, 0.75])
 with clear_col:
-    if st.button("WyczyĹ›Ä‡ wybĂłr"):
+    if st.button("Wyczyść wybór"):
         st.session_state["selected_row_id"] = None
         st.session_state["picked_from_image"] = False
         st.rerun()
@@ -122,14 +123,14 @@ df["_status_order"] = df["status"].map(order).fillna(99).astype(int)
 df_sorted = df.sort_values(["_status_order", "confidence"], ascending=[True, False]).reset_index(drop=True)
 df_table = df_sorted.drop(columns=["_status_order"], errors="ignore").copy()
 
-# AgGrid czasem ma problem z listÄ… w komĂłrce â€” zamieĹ„ na string
+# AgGrid czasem ma problem z listą w komórce — zamień na string
 if "box_xyxy" in df_table.columns:
     df_table["box_xyxy"] = df_table["box_xyxy"].astype(str)
 
 gb = GridOptionsBuilder.from_dataframe(df_table)
 
-# Checkbox selection (Ĺ‚atwiej teĹĽ odznaczyÄ‡ klikajÄ…c checkbox ponownie â€” zaleĹĽy od wersji aggrid,
-# wiÄ™c i tak mamy przycisk "WyczyĹ›Ä‡ wybĂłr")
+# Checkbox selection (łatwiej też odznaczyć klikając checkbox ponownie — zależy od wersji aggrid,
+# więc i tak mamy przycisk "Wyczyść wybór")
 gb.configure_selection(selection_mode="single", use_checkbox=True)
 
 gb.configure_pagination(enabled=False)  # scroll zamiast paginacji
@@ -147,7 +148,7 @@ grid_resp = AgGrid(
 
 selected_rows_obj = grid_resp.get("selected_rows", [])
 
-# selected_rows moĹĽe byÄ‡ listÄ… dictĂłw albo DataFrame
+# selected_rows może być listą dictów albo DataFrame
 if isinstance(selected_rows_obj, pd.DataFrame):
     selected_rows = selected_rows_obj.to_dict(orient="records")
 elif isinstance(selected_rows_obj, list):
@@ -155,11 +156,11 @@ elif isinstance(selected_rows_obj, list):
 else:
     selected_rows = []
 
-# WAĹ»NE: jeĹĽeli w tym rerunie kliknÄ™liĹ›my "Wybierz" przy obrazku,
+# WAŻNE: jeżeli w tym rerunie kliknęliśmy "Wybierz" przy obrazku,
 # to NIE NADPISUJEMY selected_row_id z gridu
 if st.session_state.get("picked_from_image", False):
     selected_row_id = st.session_state.get("selected_row_id")
-    # zdejmujemy flagÄ™ po jednym przebiegu
+    # zdejmujemy flagę po jednym przebiegu
     st.session_state["picked_from_image"] = False
 else:
     if len(selected_rows) > 0:
@@ -196,8 +197,8 @@ with col_xlsx:
         use_container_width=True,
     )
 
-# ------------------ PODGLÄ„D ------------------
-st.subheader("PodglÄ…d z zaznaczeniem (WRONG_SIDE / UNCERTAIN + opcjonalnie OK)")
+# ------------------ PODGLĄD ------------------
+st.subheader("Podgląd z zaznaczeniem (WRONG_SIDE / UNCERTAIN + opcjonalnie OK)")
 cols = st.columns(2)
 i = 0
 
@@ -229,7 +230,7 @@ for name, img_gray, res in views:
 
         ok_png, png = cv2.imencode(".png", cv2.cvtColor(vis_rgb, cv2.COLOR_RGB2BGR))
         if not ok_png:
-            st.error("Nie mogÄ™ zakodowaÄ‡ podglÄ…du do PNG")
+            st.error("Nie mogę zakodować podglądu do PNG")
         else:
             b64 = base64.b64encode(png.tobytes()).decode("utf-8")
             st.markdown(
@@ -244,4 +245,4 @@ for name, img_gray, res in views:
     i += 1
 
 if i == 0:
-    st.info("Brak bĹ‚Ä™dĂłw/niepewnych (lub wyĹ‚Ä…czone pokazywanie OK).")
+    st.info("Brak błędów/niepewnych (lub wyłączone pokazywanie OK).")
