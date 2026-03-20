@@ -1,5 +1,12 @@
-﻿numpy
+﻿streamlit
+streamlit-aggrid
+numpy
+pandas
+opencv-python
+openpyxl
 pillow
+
+# opcjonalnie (jeśli używasz w innych skryptach/notebookach)
 matplotlib
 scikit-learn
 torch

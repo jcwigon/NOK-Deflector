@@ -1,0 +1,17 @@
+{
+  "thr": 0.03,
+  "roi_top": [
+    0.12,
+    0.05,
+    0.95,
+    0.45
+  ],
+  "roi_bottom": [
+    0.12,
+    0.55,
+    0.95,
+    0.95
+  ],
+  "method": "TM_CCOEFF_NORMED",
+  "notes": "Decision based on delta = top_score - bottom_score."
+}

@@ -1,17 +1,64 @@
-﻿# Python
+﻿# =========================
+# Python
+# =========================
 __pycache__/
 *.py[cod]
+*.pyd
+*.so
+
+# Virtual environments
 .venv/
 venv/
+ENV/
+env/
 
-# Jupyter
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# Test / tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Streamlit
+# =========================
+.streamlit/secrets.toml
+
+# =========================
+# Jupyter / IPython
+# =========================
 .ipynb_checkpoints/
+*.ipynb
 
-# Data / models (do not commit large files)
+# =========================
+# Data / models (usually large)
+# =========================
 data/
-models/
 
+# Jeśli NIE chcesz commitować modelu:
+
+# Jeśli CHCESZ commitować model do deployu online:
+# - usuń linię "models/" powyżej
+# - ewentualnie ignoruj tylko ciężkie rzeczy, np.:
+# models/**/runs/
+# models/**/checkpoints/
+# *.pt
+# *.pth
+
+# =========================
 # OS / Editor
+# =========================
 .DS_Store
 Thumbs.db
+
 .vscode/
+.idea/
+
+# Local env
+.env
+
